@@ -25,20 +25,27 @@ const BarcodeScanner = ({ onDetected }) => {
           return;
         }
 
-        const cameraId = cameras[0].id;
+		const backCamera =
+		cameras.find(c =>
+			c.label.toLowerCase().includes("back") ||
+			c.label.toLowerCase().includes("rear") ||
+			c.label.toLowerCase().includes("environment")
+		) || cameras[cameras.length - 1];
+
+		const cameraId = backCamera.id;
 
         await scanner.start(
-          { deviceId: cameraId },
-          {
-            fps: 10,
-            qrbox: { width: 250, height: 150 },
-            aspectRatio: 1.3,
-          },
-          (decodedText) => {
-            onDetected(decodedText);
-          },
-          () => {}
-        );
+		{ deviceId: cameraId },
+		{
+			fps: 10,
+			qrbox: { width: 250, height: 150 },
+			aspectRatio: 1.3,
+		},
+		(decodedText) => {
+			onDetected(decodedText);
+		},
+		() => {}
+		);
       } catch (err) {
         console.error("Scanner start error:", err);
       }

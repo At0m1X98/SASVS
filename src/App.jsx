@@ -32,7 +32,7 @@ const App = () => {
   return (
     <div className="app">
       <header className="topbar">
-        <h1>📦 Scanner</h1>
+        <h1>SAS</h1>
       </header>
 
       <div className="scanner">

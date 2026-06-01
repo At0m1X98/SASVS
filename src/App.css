@@ -1,0 +1,98 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: white;
+}
+
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 12px;
+}
+
+.topbar {
+  text-align: center;
+  padding: 10px 0;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.scanner video {
+  width: 100%;
+  border-radius: 12px;
+  border: 2px solid #334155;
+}
+
+.manual-input {
+  margin-top: 10px;
+}
+
+.manual-input input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+}
+
+.card {
+  margin-top: 15px;
+  background: #1e293b;
+  padding: 14px;
+  border-radius: 14px;
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.price {
+  color: #22c55e;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.stock {
+  color: #38bdf8;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.desc {
+  margin-top: 10px;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.not-found {
+  margin-top: 10px;
+  padding: 10px;
+  background: #7f1d1d;
+  border-radius: 10px;
+  text-align: center;
+}
+.old-price {
+  text-decoration: line-through;
+  opacity: 0.6;
+  margin-right: 6px;
+}
+
+.new-price {
+  font-weight: bold;
+  color: #22c55e; /* green = discount vibe */
+}

@@ -1,38 +1,83 @@
-import { useEffect, useRef } from 'react';
-import { BrowserMultiFormatReader } from '@zxing/browser';
+import { useEffect, useRef } from "react";
+import { Html5Qrcode } from "html5-qrcode";
 
 const BarcodeScanner = ({ onDetected }) => {
-	const videoRef = useRef();
+  const scannerRef = useRef(null);
+  const containerRef = useRef(null);
+  const startedRef = useRef(false);
 
-	useEffect(() => {
-		const reader = new BrowserMultiFormatReader();
+  useEffect(() => {
+    let scanner;
 
-		reader.decodeFromVideoDevice(
-			undefined,
-			videoRef.current,
-			(result) => {
-				if(result) {
-					onDetected(result.getText());
-				}
-			}
-		);
+    const startScanner = async () => {
+      try {
+        if (!containerRef.current) return;
+        if (startedRef.current) return; // prevent double start
+        startedRef.current = true;
 
-		return () => {
-			if(reader?.stop) {
-				reader.stop();
-			}
-		};
-	}, []);
+        scanner = new Html5Qrcode(containerRef.current.id);
+        scannerRef.current = scanner;
 
-	return (
-		<video
-			ref={videoRef}
-			style={{
-				width: '100%',
-				maxWidth: '400px'
-			}}
-		/>
-	)
-}
+        const cameras = await Html5Qrcode.getCameras();
+
+        if (!cameras || cameras.length === 0) {
+          console.error("No camera found");
+          return;
+        }
+
+        const cameraId = cameras[0].id;
+
+        await scanner.start(
+          { deviceId: cameraId },
+          {
+            fps: 10,
+            qrbox: { width: 250, height: 150 },
+            aspectRatio: 1.3,
+          },
+          (decodedText) => {
+            onDetected(decodedText);
+          },
+          () => {}
+        );
+      } catch (err) {
+        console.error("Scanner start error:", err);
+      }
+    };
+
+    // IMPORTANT: run after paint
+    requestAnimationFrame(() => {
+      startScanner();
+    });
+
+    return () => {
+      startedRef.current = false;
+
+      if (scannerRef.current) {
+        try {
+          scannerRef.current.stop().then(() => {
+            scannerRef.current.clear();
+          });
+        } catch (e) {
+          // ignore cleanup errors
+        }
+      }
+    };
+  }, [onDetected]);
+
+  return (
+    <div
+      ref={containerRef}
+      id="barcode-scanner"
+      style={{
+        width: "100%",
+        maxWidth: "400px",
+        minHeight: "300px",
+        borderRadius: "12px",
+        overflow: "hidden",
+        background: "#000",
+      }}
+    />
+  );
+};
 
 export default BarcodeScanner;

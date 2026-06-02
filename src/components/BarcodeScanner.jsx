@@ -40,8 +40,8 @@ await scanner.start(
 
 fps: 8,
 qrbox: (w, h) => ({
-  width: Math.min(w * 0.8, 500),
-  height: Math.min(h * 0.4, 200),
+  width: Math.min(w * 0.9, 600),
+  height: Math.min(h * 0.9, 600),
 }),
 aspectRatio: 1.3,
 },

@@ -41,7 +41,7 @@ const startScanner = async () => {
 fps: 15,
 qrbox: (viewfinderWidth, viewfinderHeight) => ({
   width: Math.min(viewfinderWidth * 0.5, 250),
-  height: Math.min(viewfinderHeight * 0.2, 60),
+  height: Math.min(viewfinderHeight * 0.1, 60),
 }),
 aspectRatio: 1.3,
 },

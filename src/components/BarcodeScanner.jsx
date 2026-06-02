@@ -39,14 +39,18 @@ const BarcodeScanner = ({ onDetected }) => {
   }, [onDetected]);
 
   return (
-    <div
-      id="barcode-scanner"
-      style={{
-        width: "100%",
-        height: "350px",
-      }}
-    />
-  );
+  <div
+    id="barcode-scanner"
+    style={{
+      width: "100%",
+      maxWidth: "400px",
+      height: "250px",
+      overflow: "hidden",
+      borderRadius: "12px",
+      margin: "0 auto",
+    }}
+  />
+);
 };
 
 export default BarcodeScanner;

@@ -35,7 +35,11 @@ const startScanner = async () => {
 	const cameraId = backCamera.id;  
 
     await scanner.start(  
-	{ deviceId: cameraId },  
+	{
+  deviceId: { exact: cameraId },
+  width: { ideal: 3840 },
+  height: { ideal: 2160 }
+},  
 	{
 
 fps: 15,

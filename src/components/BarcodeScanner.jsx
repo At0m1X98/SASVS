@@ -38,7 +38,7 @@ await scanner.start(
 { deviceId: cameraId },
 {
 
-fps: 15,
+fps: 8,
 qrbox: (w, h) => ({
   width: Math.min(w * 0.8, 500),
   height: Math.min(h * 0.4, 200),

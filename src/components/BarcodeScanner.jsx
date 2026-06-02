@@ -37,14 +37,16 @@ const cameraId = backCamera.id;
 await scanner.start(
   { facingMode: "environment" },
   {
-    fps: 10,
-    qrbox: { width: 250, height: 250 },
+    fps: 5,
+    qrbox: { width: 120, height: 120 },
     aspectRatio: 1.0,
     videoConstraints: {
       facingMode: "environment",
-      width: { ideal: 1920 },
-      height: { ideal: 1080 },
+      width: { ideal: 2560 },
+      height: { ideal: 1440 },
       focusMode: "continuous",
+      advanced: [{ focusMode: "continuous" }],
+      zoom: 2
     },
   },
   (decodedText) => {

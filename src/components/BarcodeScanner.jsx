@@ -35,37 +35,28 @@ const startScanner = async () => {
 
     const cameraId = backCamera.id;  
 
-    await scanner.start(  
-      cameraId,{ facingMode: "environment"},  
-      {  
-        fps: 5,  
+    await scanner.start(
+  { facingMode: "environment" },
+  {
+    fps: 5,
+    qrbox: { width: 140, height: 120 },
+    aspectRatio: 1.0,
 
-        // IMPORTANT: smaller scan area for tiny barcodes  
-        qrbox: { width: 140, height: 120 },  
+    videoConstraints: {
+      facingMode: { exact: "environment" }, // 🔥 force back camera
 
-        aspectRatio: 1.0,  
+      width: { ideal: 1920 },
+      height: { ideal: 1080 },
 
-        videoConstraints: {  
-          width: { ideal: 1920 },  
-          height: { ideal: 1080 },  
-
-          // autofocus improvements  
-          focusMode: "continuous",  
-          advanced: [{ focusMode: "continuous" }],  
-
-          // zoom helps a LOT for small barcodes (may not work on all devices)  
-          advanced: [{ zoom: 2 }],  
-        },  
-      },  
-      (decodedText) => {  
-        if (decodedText) {  
-          onDetected(decodedText);  
-        }  
-      },  
-      (errorMessage) => {  
-        // silent scan errors (normal)  
-      }  
-    );  
+      focusMode: "continuous",
+      advanced: [{ zoom: 2 }],
+    },
+  },
+  (decodedText) => {
+    if (decodedText) onDetected(decodedText);
+  },
+  () => {}
+);
   } catch (err) {  
     console.error("Scanner start error:", err);  
   }  

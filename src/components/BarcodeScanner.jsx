@@ -38,12 +38,12 @@ const startScanner = async () => {
 	{ deviceId: cameraId },  
 	{
 
-fps: 20,
+fps: 15,
 qrbox: (viewfinderWidth, viewfinderHeight) => ({
 width: Math.min(viewfinderWidth * 0.6, 220),
 height: 60,
 }),
-aspectRatio: 1.777,
+aspectRatio: 1.3,
 },
 (decodedText) => {
 onDetected(decodedText);

@@ -25,46 +25,43 @@ const BarcodeScanner = ({ onDetected }) => {
           return;
         }
 
-        // Prefer back camera
+        // Strong back-camera selection
         const backCamera =
-          cameras.find((c) =>
-            c.label.toLowerCase().includes("back") ||
-            c.label.toLowerCase().includes("rear") ||
-            c.label.toLowerCase().includes("environment")
-          ) || cameras[cameras.length - 1];
+          cameras.find((c) => {
+            const label = c.label.toLowerCase();
+            return (
+              label.includes("back") ||
+              label.includes("rear") ||
+              label.includes("environment") ||
+              label.includes("0") // many Android devices put back camera first
+            );
+          }) || cameras[0];
 
         const cameraId = backCamera.id;
 
         await scanner.start(
-          cameraId,
+          cameraId, // ✅ IMPORTANT: only this controls camera
           {
             fps: 5,
-
-            // IMPORTANT: smaller scan area for tiny barcodes
             qrbox: { width: 140, height: 120 },
-
             aspectRatio: 1.0,
+
+            // ❌ REMOVE facingMode completely
 
             videoConstraints: {
               width: { ideal: 1920 },
               height: { ideal: 1080 },
 
-              // autofocus improvements
               focusMode: "continuous",
-              advanced: [{ focusMode: "continuous" }],
 
-              // zoom helps a LOT for small barcodes (may not work on all devices)
+              // zoom helps small barcodes (if supported)
               advanced: [{ zoom: 2 }],
             },
           },
           (decodedText) => {
-            if (decodedText) {
-              onDetected(decodedText);
-            }
+            if (decodedText) onDetected(decodedText);
           },
-          (errorMessage) => {
-            // silent scan errors (normal)
-          }
+          () => {}
         );
       } catch (err) {
         console.error("Scanner start error:", err);
@@ -80,14 +77,11 @@ const BarcodeScanner = ({ onDetected }) => {
 
       if (scannerRef.current) {
         try {
-          scannerRef.current
-            .stop()
-            .then(() => {
-              scannerRef.current.clear();
-            })
-            .catch(() => {});
+          scannerRef.current.stop().then(() => {
+            scannerRef.current.clear();
+          });
         } catch (e) {
-          // ignore cleanup errors
+          // ignore
         }
       }
     };

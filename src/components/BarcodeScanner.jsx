@@ -1,3 +1,5 @@
+Perfect, this works but the camera is front one not the main on the back of the phone.
+
 import { useEffect, useRef } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 
@@ -35,28 +37,37 @@ const startScanner = async () => {
 
     const cameraId = backCamera.id;  
 
-    await scanner.start(
-  { facingMode: "environment" },
-  {
-    fps: 5,
-    qrbox: { width: 140, height: 120 },
-    aspectRatio: 1.0,
+    await scanner.start(  
+      cameraId,  
+      {  
+        fps: 5,  
 
-    videoConstraints: {
-      facingMode: { exact: "environment" }, // 🔥 force back camera
+        // IMPORTANT: smaller scan area for tiny barcodes  
+        qrbox: { width: 140, height: 120 },  
 
-      width: { ideal: 1920 },
-      height: { ideal: 1080 },
+        aspectRatio: 1.0,  
 
-      focusMode: "continuous",
-      advanced: [{ zoom: 2 }],
-    },
-  },
-  (decodedText) => {
-    if (decodedText) onDetected(decodedText);
-  },
-  () => {}
-);
+        videoConstraints: {  
+          width: { ideal: 1920 },  
+          height: { ideal: 1080 },  
+
+          // autofocus improvements  
+          focusMode: "continuous",  
+          advanced: [{ focusMode: "continuous" }],  
+
+          // zoom helps a LOT for small barcodes (may not work on all devices)  
+          advanced: [{ zoom: 2 }],  
+        },  
+      },  
+      (decodedText) => {  
+        if (decodedText) {  
+          onDetected(decodedText);  
+        }  
+      },  
+      (errorMessage) => {  
+        // silent scan errors (normal)  
+      }  
+    );  
   } catch (err) {  
     console.error("Scanner start error:", err);  
   }  

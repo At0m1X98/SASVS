@@ -1,115 +1,137 @@
-Perfect, this works but the camera is front one not the main on the back of the phone.
-
 import { useEffect, useRef } from "react";
-import { Html5Qrcode } from "html5-qrcode";
+import {
+  Html5Qrcode,
+  Html5QrcodeSupportedFormats,
+} from "html5-qrcode";
 
 const BarcodeScanner = ({ onDetected }) => {
-const scannerRef = useRef(null);
-const containerRef = useRef(null);
-const startedRef = useRef(false);
+  const scannerRef = useRef(null);
+  const startedRef = useRef(false);
 
-useEffect(() => {
-let scanner;
+  useEffect(() => {
+    let isMounted = true;
 
-const startScanner = async () => {  
-  try {  
-    if (!containerRef.current) return;  
-    if (startedRef.current) return;  
-    startedRef.current = true;  
+    const startScanner = async () => {
+      if (startedRef.current) return;
 
-    scanner = new Html5Qrcode(containerRef.current.id);  
-    scannerRef.current = scanner;  
+      try {
+        startedRef.current = true;
 
-    const cameras = await Html5Qrcode.getCameras();  
+        const scanner = new Html5Qrcode("barcode-scanner");
+        scannerRef.current = scanner;
 
-    if (!cameras || cameras.length === 0) {  
-      console.error("No camera found");  
-      return;  
-    }  
+        const formatsToSupport = [
+          Html5QrcodeSupportedFormats.CODE_128,
+          Html5QrcodeSupportedFormats.CODE_39,
+          Html5QrcodeSupportedFormats.CODE_93,
+          Html5QrcodeSupportedFormats.EAN_13,
+          Html5QrcodeSupportedFormats.EAN_8,
+          Html5QrcodeSupportedFormats.UPC_A,
+          Html5QrcodeSupportedFormats.UPC_E,
+          Html5QrcodeSupportedFormats.ITF,
+          Html5QrcodeSupportedFormats.QR_CODE,
+        ];
 
-    // Prefer back camera  
-    const backCamera =  
-      cameras.find((c) =>  
-        c.label.toLowerCase().includes("back") ||  
-        c.label.toLowerCase().includes("rear") ||  
-        c.label.toLowerCase().includes("environment")  
-      ) || cameras[cameras.length - 1];  
+        const config = {
+          fps: 10,
+          qrbox: { width: 280, height: 280 },
+          aspectRatio: 1.0,
+          formatsToSupport,
+        };
 
-    const cameraId = backCamera.id;  
+        try {
+          // Preferred approach on mobile
+          await scanner.start(
+            { facingMode: "environment" },
+            config,
+            (decodedText) => {
+              if (decodedText) {
+                onDetected(decodedText);
+              }
+            },
+            () => {}
+          );
 
-    await scanner.start(  
-      cameraId,  
-      {  
-        fps: 5,  
+          console.log("Started using environment camera");
+          return;
+        } catch (err) {
+          console.warn(
+            "Environment camera failed, trying camera list...",
+            err
+          );
+        }
 
-        // IMPORTANT: smaller scan area for tiny barcodes  
-        qrbox: { width: 140, height: 120 },  
+        // Fallback: choose rear camera manually
+        const cameras = await Html5Qrcode.getCameras();
 
-        aspectRatio: 1.0,  
+        if (!cameras?.length) {
+          throw new Error("No cameras found");
+        }
 
-        videoConstraints: {  
-          width: { ideal: 1920 },  
-          height: { ideal: 1080 },  
+        console.log("Available cameras:", cameras);
 
-          // autofocus improvements  
-          focusMode: "continuous",  
-          advanced: [{ focusMode: "continuous" }],  
+        const backCamera =
+          cameras.find((camera) => {
+            const label = camera.label.toLowerCase();
 
-          // zoom helps a LOT for small barcodes (may not work on all devices)  
-          advanced: [{ zoom: 2 }],  
-        },  
-      },  
-      (decodedText) => {  
-        if (decodedText) {  
-          onDetected(decodedText);  
-        }  
-      },  
-      (errorMessage) => {  
-        // silent scan errors (normal)  
-      }  
-    );  
-  } catch (err) {  
-    console.error("Scanner start error:", err);  
-  }  
-};  
+            return (
+              label.includes("back") ||
+              label.includes("rear") ||
+              label.includes("environment")
+            );
+          }) || cameras[cameras.length - 1];
 
-requestAnimationFrame(() => {  
-  startScanner();  
-});  
+        await scanner.start(
+          backCamera.id,
+          config,
+          (decodedText) => {
+            if (decodedText) {
+              onDetected(decodedText);
+            }
+          },
+          () => {}
+        );
 
-return () => {  
-  startedRef.current = false;  
+        console.log("Started using:", backCamera.label);
+      } catch (error) {
+        console.error("Scanner start error:", error);
 
-  if (scannerRef.current) {  
-    try {  
-      scannerRef.current  
-        .stop()  
-        .then(() => {  
-          scannerRef.current.clear();  
-        })  
-        .catch(() => {});  
-    } catch (e) {  
-      // ignore cleanup errors  
-    }  
-  }  
-};
+        if (isMounted) {
+          startedRef.current = false;
+        }
+      }
+    };
 
-}, [onDetected]);
+    startScanner();
 
-return (
-<div
-ref={containerRef}
-id="barcode-scanner"
-style={{
-width: "100%",
-maxWidth: "400px",
-minHeight: "300px",
-borderRadius: "12px",
-overflow: "hidden",
-background: "#000",
-}}
-/>
-);
+    return () => {
+      isMounted = false;
+      startedRef.current = false;
+
+      const scanner = scannerRef.current;
+
+      if (scanner) {
+        scanner
+          .stop()
+          .then(() => scanner.clear())
+          .catch(() => {});
+      }
+    };
+  }, [onDetected]);
+
+  return (
+    <div
+      id="barcode-scanner"
+      style={{
+        width: "100%",
+        maxWidth: "400px",
+        minHeight: "300px",
+        borderRadius: "12px",
+        overflow: "hidden",
+        background: "#000",
+      }}
+    />
+  );
 };
 
 export default BarcodeScanner;

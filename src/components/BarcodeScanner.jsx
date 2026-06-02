@@ -35,19 +35,11 @@ const BarcodeScanner = ({ onDetected }) => {
 		const cameraId = backCamera.id;
 
         await scanner.start(
-		{
-    deviceId: cameraId,
-    advanced: [
-      {
-        width: 1920,
-        height: 1080,
-      },
-    ],
-  },
+		{ deviceId: cameraId },
 		{
 			fps: 10,
-			qrbox: { width: 300, height: 200 },
-			aspectRatio: 1.777,
+			qrbox: { width: 250, height: 150 },
+			aspectRatio: 1.3,
 		},
 		(decodedText) => {
 			onDetected(decodedText);

@@ -39,9 +39,9 @@ await scanner.start(
 {
 
 fps: 15,
-qrbox: (viewfinderWidth, viewfinderHeight) => ({
-width: Math.min(viewfinderWidth * 0.5, 250),
-height: Math.min(viewfinderHeight * 0.2, 50),
+qrbox: (w, h) => ({
+  width: Math.min(w * 0.8, 500),
+  height: Math.min(h * 0.4, 200),
 }),
 aspectRatio: 1.3,
 },

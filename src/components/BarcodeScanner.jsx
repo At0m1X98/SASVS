@@ -43,7 +43,7 @@ qrbox: (viewfinderWidth, viewfinderHeight) => ({
 width: Math.min(viewfinderWidth * 0.6, 220),
 height: 60,
 }),
-aspectRatio: 1.3,
+aspectRatio: 1.777,
 },
 (decodedText) => {
 onDetected(decodedText);

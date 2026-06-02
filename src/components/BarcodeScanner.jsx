@@ -35,12 +35,13 @@ c.label.toLowerCase().includes("environment")
 const cameraId = backCamera.id;
 
 await scanner.start(
-  { deviceId: cameraId },
+  { facingMode: "environment" },
   {
     fps: 10,
-    qrbox: { width: 300, height: 300 },
+    qrbox: { width: 250, height: 250 },
     aspectRatio: 1.0,
     videoConstraints: {
+      facingMode: "environment",
       width: { ideal: 1920 },
       height: { ideal: 1080 },
       focusMode: "continuous",

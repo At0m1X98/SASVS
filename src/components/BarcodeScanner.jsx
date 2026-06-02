@@ -38,7 +38,7 @@ await scanner.start(
   { facingMode: "environment" },
   {
     fps: 5,
-    qrbox: { width: 120, height: 80 },
+    qrbox: { width: 250, height: 120 },
     aspectRatio: 1.0,
     videoConstraints: {
       facingMode: "environment",

@@ -38,7 +38,10 @@ const BarcodeScanner = ({ onDetected }) => {
 		{ deviceId: cameraId },
 		{
 			fps: 10,
-			qrbox: { width: 250, height: 150 },
+			qrbox: (viewfinderWidth, viewfinderHeight) => ({
+  width: Math.min(viewfinderWidth * 0.9, 500),
+  height: Math.min(viewfinderHeight * 0.4, 250),
+})
 			aspectRatio: 1.3,
 		},
 		(decodedText) => {

@@ -35,20 +35,21 @@ c.label.toLowerCase().includes("environment")
 const cameraId = backCamera.id;
 
 await scanner.start(
-{ deviceId: cameraId },
-{
-
-fps: 8,
-qrbox: (w, h) => ({
-  width: Math.min(w * 0.9, 600),
-  height: Math.min(h * 0.9, 600),
-}),
-aspectRatio: 1.3,
-},
-(decodedText) => {
-onDetected(decodedText);
-},
-() => {}
+  { deviceId: cameraId },
+  {
+    fps: 10,
+    qrbox: { width: 300, height: 300 },
+    aspectRatio: 1.0,
+    videoConstraints: {
+      width: { ideal: 1920 },
+      height: { ideal: 1080 },
+      focusMode: "continuous",
+    },
+  },
+  (decodedText) => {
+    onDetected(decodedText);
+  },
+  () => {}
 );
 } catch (err) {
 console.error("Scanner start error:", err);
